@@ -1,16 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth/guards";
+import { formatZodError } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const createProjectSchema = z.object({
-  name: z.string().min(1, "Project name is required").max(200),
-  description: z.string().max(2000).optional().default(""),
+  name: z.string().min(1, "Project name is required"),
+  description: z.string().default(""),
 });
 
 /**
  * GET /api/projects
- * Returns all projects the authenticated user is a member of.
+ * R1/R8: Returns projects the current user is a member of.
  */
 export async function GET() {
   const { user, error: authError } = await requireAuth();
@@ -18,12 +19,16 @@ export async function GET() {
 
   const supabase = await createClient();
 
-  // RLS ensures users only see projects they're members of
-  const { data, error } = await supabase
+  const { data: projects, error } = await supabase
     .from("projects")
     .select(`
-      *,
-      project_members!inner(role, user_id)
+      id,
+      name,
+      description,
+      created_by,
+      created_at,
+      updated_at,
+      project_members!inner(role)
     `)
     .order("created_at", { ascending: false });
 
@@ -31,19 +36,23 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Attach the current user's role to each project
-  const projects = data?.map((project) => {
-    const membership = project.project_members?.find(
-      (m: { user_id: string }) => m.user_id === user!.id
-    );
+  // Format to include the user's role on the project
+  const formatted = (projects || []).map((p) => {
+    const member = Array.isArray(p.project_members)
+      ? p.project_members[0]
+      : p.project_members;
     return {
-      ...project,
-      current_user_role: membership?.role || null,
-      project_members: undefined, // Don't leak membership details in list
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      created_by: p.created_by,
+      created_at: p.created_at,
+      updated_at: p.updated_at,
+      user_role: member?.role || "guest",
     };
   });
 
-  return NextResponse.json({ data: projects });
+  return NextResponse.json({ data: formatted });
 }
 
 /**
@@ -59,11 +68,7 @@ export async function POST(request: Request) {
     const parsed = createProjectSchema.safeParse(body);
 
     if (!parsed.success) {
-      const errors: Record<string, string> = {};
-      parsed.error.errors.forEach((e) => {
-        errors[e.path.join(".")] = e.message;
-      });
-      return NextResponse.json({ errors }, { status: 400 });
+      return NextResponse.json({ errors: formatZodError(parsed.error) }, { status: 400 });
     }
 
     const supabase = await createClient();

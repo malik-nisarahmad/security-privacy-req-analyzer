@@ -1,14 +1,13 @@
 import { requireProjectRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
+import { formatZodError } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const addMemberSchema = z.object({
   email: z.string().email("Valid email is required"),
-  role: z.enum(["project_manager", "analyst", "guest"], {
-    errorMap: () => ({ message: "Role must be project_manager, analyst, or guest" }),
-  }),
+  role: z.enum(["project_manager", "analyst", "guest"]),
 });
 
 const updateMemberSchema = z.object({
@@ -63,11 +62,7 @@ export async function POST(
     const parsed = addMemberSchema.safeParse(body);
 
     if (!parsed.success) {
-      const errors: Record<string, string> = {};
-      parsed.error.errors.forEach((e) => {
-        errors[e.path.join(".")] = e.message;
-      });
-      return NextResponse.json({ errors }, { status: 400 });
+      return NextResponse.json({ errors: formatZodError(parsed.error) }, { status: 400 });
     }
 
     // Find the user by email using admin client (to search auth.users)
@@ -145,11 +140,7 @@ export async function PATCH(
     const parsed = updateMemberSchema.safeParse(body);
 
     if (!parsed.success) {
-      const errors: Record<string, string> = {};
-      parsed.error.errors.forEach((e) => {
-        errors[e.path.join(".")] = e.message;
-      });
-      return NextResponse.json({ errors }, { status: 400 });
+      return NextResponse.json({ errors: formatZodError(parsed.error) }, { status: 400 });
     }
 
     const supabase = await createClient();

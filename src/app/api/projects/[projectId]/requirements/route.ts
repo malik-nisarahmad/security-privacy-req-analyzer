@@ -1,5 +1,6 @@
 import { requireProjectRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
+import { formatZodError } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -65,11 +66,7 @@ export async function POST(
     const parsed = requirementSchema.safeParse(body);
 
     if (!parsed.success) {
-      const errors: Record<string, string> = {};
-      parsed.error.errors.forEach((e) => {
-        errors[e.path.join(".")] = e.message;
-      });
-      return NextResponse.json({ errors }, { status: 400 });
+      return NextResponse.json({ errors: formatZodError(parsed.error) }, { status: 400 });
     }
 
     const { goal_ids, ...reqData } = parsed.data;
