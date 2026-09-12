@@ -4,7 +4,8 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Next.js middleware that refreshes the Supabase auth session on every request.
  * This ensures httpOnly cookies stay fresh and expired sessions are caught early.
- * Unauthenticated users are redirected to /login for protected routes.
+ * Unauthenticated users are redirected to /login for protected routes,
+ * while allowing public landing page access and demo modes.
  */
 export async function middleware(request: NextRequest) {
   if (
@@ -43,13 +44,17 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users away from protected routes
-  const isAuthPage =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/signup");
-  const isApiRoute = request.nextUrl.pathname.startsWith("/api");
-  const isPublicRoute = request.nextUrl.pathname === "/";
+  const pathname = request.nextUrl.pathname;
 
+  const isAuthPage =
+    pathname.startsWith("/login") || pathname.startsWith("/signup");
+  const isApiRoute = pathname.startsWith("/api");
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname.startsWith("/projects") ||
+    pathname.startsWith("/dashboard");
+
+  // Redirect unauthenticated users away from protected administrative routes
   if (!user && !isAuthPage && !isApiRoute && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
