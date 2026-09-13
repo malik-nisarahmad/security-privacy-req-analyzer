@@ -42,25 +42,25 @@ export function CreateRequirementModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-[#121215] border border-zinc-800 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80">
-          <div className="flex items-center space-x-2.5">
-            <div className="h-7 w-7 rounded-md bg-zinc-800 text-indigo-400 flex items-center justify-center">
-              <FileCode2 className="h-4 w-4" />
+    <div className="fixed inset-0 z-50 bg-[#332F3A]/40 backdrop-blur-md flex items-center justify-center p-4 select-none">
+      <div className="clay-card rounded-[32px] sm:rounded-[40px] max-w-lg w-full p-7 sm:p-8 space-y-5 shadow-[24px_24px_48px_rgba(160,150,180,0.3),-12px_-12px_28px_#ffffff] max-h-[90vh] overflow-y-auto bg-white/95">
+        <div className="flex items-center justify-between pb-4 border-b border-[#EAE5F3]">
+          <div className="flex items-center space-x-3">
+            <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-[#38BDF8] to-[#0EA5E9] text-white flex items-center justify-center shadow-[4px_4px_10px_rgba(14,165,233,0.3)]">
+              <FileCode2 className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-100">
+              <h3 className="text-lg font-black text-[#332F3A]" style={{ fontFamily: "var(--font-nunito), sans-serif" }}>
                 Specify Security Requirement
               </h3>
-              <p className="text-[11px] text-zinc-400">
-                SRS FR-SRM 1: Strictly Scoped (No extraneous fields)
+              <p className="text-xs font-medium text-[#635F69]">
+                Formal specification & constraints
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+            className="p-2 rounded-xl text-[#635F69] hover:text-[#332F3A] hover:bg-[#EFEBF5] transition-all"
           >
             <X className="h-4 w-4" />
           </button>
@@ -68,7 +68,7 @@ export function CreateRequirementModal({
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-zinc-300 font-medium mb-1.5">
+            <label className="block text-[#635F69] font-bold mb-1.5">
               Requirement ID Label *
             </label>
             <input
@@ -79,12 +79,12 @@ export function CreateRequirementModal({
                 setFormData({ ...formData, req_id_label: e.target.value })
               }
               placeholder="e.g. R-003"
-              className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+              className="w-full px-4 py-2.5 clay-input text-xs font-medium placeholder-[#635F69]"
             />
           </div>
 
           <div>
-            <label className="block text-zinc-300 font-medium mb-1.5">
+            <label className="block text-[#635F69] font-bold mb-1.5">
               Description *
             </label>
             <textarea
@@ -95,12 +95,12 @@ export function CreateRequirementModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               placeholder="The system shall enforce TLS 1.3 encryption across..."
-              className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+              className="w-full px-4 py-2.5 clay-input text-xs font-medium placeholder-[#635F69] resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-zinc-300 font-medium mb-1.5">
+            <label className="block text-[#635F69] font-bold mb-1.5">
               Constraints Text
             </label>
             <input
@@ -110,15 +110,15 @@ export function CreateRequirementModal({
                 setFormData({ ...formData, constraints_text: e.target.value })
               }
               placeholder="e.g. Handshake latency under 250ms, AES-256 cipher"
-              className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+              className="w-full px-4 py-2.5 clay-input text-xs font-medium placeholder-[#635F69]"
             />
           </div>
 
           <div>
-            <label className="block text-zinc-300 font-medium mb-1.5">
+            <label className="block text-[#635F69] font-bold mb-1.5">
               Link to Goals
             </label>
-            <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-950 border border-zinc-800/80 rounded-lg">
+            <div className="flex flex-wrap gap-1.5 p-3 rounded-2xl bg-[#EFEBF5] shadow-[inset_2px_2px_5px_#dcd7e7,inset_-2px_-2px_5px_#ffffff]">
               {goals.map((g) => {
                 const isChecked = formData.linked_goal_ids.includes(g.id);
                 return (
@@ -126,10 +126,10 @@ export function CreateRequirementModal({
                     type="button"
                     key={g.id}
                     onClick={() => toggleGoal(g.id)}
-                    className={`text-[11px] px-2.5 py-1 rounded font-mono transition-colors ${
+                    className={`text-[11px] px-2.5 py-1 rounded-full font-bold transition-all ${
                       isChecked
-                        ? "bg-zinc-100 text-zinc-950 font-bold"
-                        : "bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+                        ? "clay-btn-primary text-white shadow-[2px_2px_6px_rgba(139,92,246,0.3)]"
+                        : "bg-white text-[#635F69] hover:text-[#332F3A] shadow-[2px_2px_4px_rgba(160,150,180,0.1)]"
                     }`}
                   >
                     {g.goal_id_label}
@@ -139,17 +139,17 @@ export function CreateRequirementModal({
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-3 border-t border-zinc-800">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-[#EAE5F3]">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 rounded-lg border border-zinc-800 text-zinc-300 hover:bg-zinc-800 transition-colors font-medium"
+              className="clay-btn-secondary px-5 py-2.5 text-xs font-bold text-[#635F69]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold shadow-sm transition-all active:scale-[0.98]"
+              className="clay-btn-primary px-6 py-2.5 text-white text-xs font-bold shadow-[6px_6px_14px_rgba(139,92,246,0.3),-2px_-2px_6px_#ffffff]"
             >
               Save Requirement
             </button>

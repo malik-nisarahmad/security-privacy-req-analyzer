@@ -41,7 +41,7 @@ const SESSION_STORAGE_KEY = "sprat_active_user";
 
 export function getStoredSession(): UserSession {
   if (typeof window === "undefined") {
-    return PRESET_USERS.pm;
+    return PRESET_USERS.guest;
   }
   try {
     const stored = localStorage.getItem(SESSION_STORAGE_KEY);
@@ -51,7 +51,7 @@ export function getStoredSession(): UserSession {
   } catch {
     // fallback
   }
-  return PRESET_USERS.pm;
+  return PRESET_USERS.guest;
 }
 
 export function setStoredSession(user: UserSession): void {
@@ -73,7 +73,7 @@ export function clearStoredSession(): void {
 }
 
 export function useUserSession() {
-  const [session, setSession] = useState<UserSession>(PRESET_USERS.pm);
+  const [session, setSession] = useState<UserSession>(PRESET_USERS.guest);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export function useUserSession() {
   };
 
   const logout = () => {
-    setStoredSession(PRESET_USERS.guest);
+    clearStoredSession();
     setSession(PRESET_USERS.guest);
   };
 

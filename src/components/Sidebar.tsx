@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   Shield,
   Layers,
@@ -14,10 +16,15 @@ import {
   Lock,
   Plus,
   LogOut,
-  ExternalLink,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { UserRole } from "@/types";
-import type { UserSession } from "@/lib/auth/session";
+import {
+  type UserSession,
+  clearStoredSession,
+  PRESET_USERS,
+  setStoredSession,
+} from "@/lib/auth/session";
 
 export type WorkspaceTab =
   | "overview"
@@ -52,15 +59,30 @@ export function Sidebar({
   onOpenGoalModal,
   onOpenScenarioModal,
   onOpenReqModal,
-  activeProjectName = "Alpha Health Portal (HIPAA)",
+  activeProjectName = "Alpha Health Portal",
 }: SidebarProps) {
-  const currentRole = user.role;
-  const isGuest = currentRole === "guest";
-  const canEdit = currentRole === "admin" || currentRole === "project_manager" || currentRole === "analyst";
-  const isAdmin = currentRole === "admin";
-  const isPM = currentRole === "project_manager";
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Filter navigation items strictly based on the user's role
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // Offline fallback
+    }
+    clearStoredSession();
+    setStoredSession(PRESET_USERS.guest);
+    toast.success("Logged out successfully");
+    window.location.href = "/login";
+  };
+
+  const currentRole = user.role;
+  const canEdit =
+    currentRole === "admin" ||
+    currentRole === "project_manager" ||
+    currentRole === "analyst";
+
   const allNavItems = [
     {
       id: "overview" as WorkspaceTab,
@@ -77,7 +99,7 @@ export function Sidebar({
     },
     {
       id: "scenarios" as WorkspaceTab,
-      label: "Misuse Scenarios",
+      label: "Threats",
       icon: AlertTriangle,
       badge: `${scenarioCount}`,
       roles: ["admin", "project_manager", "analyst", "guest"],
@@ -91,25 +113,25 @@ export function Sidebar({
     },
     {
       id: "readability" as WorkspaceTab,
-      label: "Readability (FRES)",
+      label: "Readability",
       icon: BookOpen,
       roles: ["admin", "project_manager", "analyst", "guest"],
     },
     {
       id: "traceability" as WorkspaceTab,
-      label: "Traceability Matrix",
+      label: "Traceability",
       icon: Network,
       roles: ["admin", "project_manager", "analyst"],
     },
     {
       id: "roles" as WorkspaceTab,
-      label: "Team & Policy Access",
+      label: "Access Control",
       icon: Users,
       roles: ["admin", "project_manager"],
     },
     {
       id: "security" as WorkspaceTab,
-      label: "Security Specification",
+      label: "Security Specs",
       icon: Lock,
       roles: ["admin"],
     },
@@ -120,68 +142,68 @@ export function Sidebar({
   );
 
   return (
-    <aside className="w-60 flex-shrink-0 bg-[#09090b] border-r border-zinc-850 flex flex-col h-screen sticky top-0 text-zinc-300 select-none">
-      {/* Brand Header */}
-      <div className="p-4 border-b border-zinc-850/80 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2 group">
-          <div className="h-6 w-6 rounded-md bg-zinc-100 text-zinc-950 flex items-center justify-center font-bold text-xs">
-            <Shield className="h-3.5 w-3.5 text-zinc-950" />
+    <aside className="w-[260px] flex-shrink-0 bg-white/80 backdrop-blur-2xl border-r border-white/90 shadow-[10px_0_30px_rgba(160,150,180,0.12)] flex flex-col h-screen sticky top-0 text-[#332F3A] select-none z-20">
+      {/* ── Brand ── */}
+      <div className="px-6 py-5 flex items-center space-x-3">
+        <Link href="/" className="flex items-center space-x-2.5 group">
+          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] text-white flex items-center justify-center transition-transform group-hover:scale-105 shadow-[4px_4px_10px_rgba(139,92,246,0.3),-2px_-2px_6px_#ffffff]">
+            <Shield className="h-4 w-4" />
           </div>
-          <span className="font-semibold text-sm tracking-tight text-white">
+          <span
+            className="font-extrabold text-base tracking-tight text-[#332F3A]"
+            style={{ fontFamily: "var(--font-nunito), sans-serif" }}
+          >
             SPRAT
           </span>
-        </Link>
-
-        <Link
-          href="/"
-          className="text-zinc-500 hover:text-zinc-300 p-1 rounded transition-colors"
-          title="Home"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#EFEBF5] text-[#7C3AED]">
+            2.0
+          </span>
         </Link>
       </div>
 
-      {/* Active Project Label */}
-      <div className="px-4 py-3 border-b border-zinc-850/60">
-        <div className="text-[10px] uppercase font-semibold tracking-wider text-zinc-500">
-          Project
-        </div>
-        <div className="text-xs font-medium text-zinc-200 mt-0.5 truncate">
-          {activeProjectName}
+      {/* ── Project Context ── */}
+      <div className="px-5 pb-4">
+        <div className="px-3.5 py-2.5 rounded-2xl bg-[#EFEBF5] border border-white/60 shadow-[inset_2px_2px_5px_#dcd7e7,inset_-2px_-2px_5px_#ffffff]">
+          <div className="text-[10px] uppercase font-bold tracking-widest text-[#7C3AED]">
+            Workspace
+          </div>
+          <div
+            className="text-xs font-bold text-[#332F3A] mt-0.5 truncate"
+            style={{ fontFamily: "var(--font-nunito), sans-serif" }}
+          >
+            {activeProjectName}
+          </div>
         </div>
       </div>
 
-      {/* Quick Action Buttons (Only visible to Authoring Roles, NEVER for Guest) */}
+      {/* ── Quick Actions (Authoring Roles Only) ── */}
       {canEdit && (
-        <div className="px-3 pt-3 pb-1">
-          <div className="flex items-center space-x-1">
-            <button
-              onClick={onOpenGoalModal}
-              className="flex-1 py-1 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-[11px] font-medium text-zinc-300 hover:text-white flex items-center justify-center space-x-1 transition-colors"
-            >
-              <Plus className="h-3 w-3" />
-              <span>Goal</span>
-            </button>
-            <button
-              onClick={onOpenScenarioModal}
-              className="flex-1 py-1 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-[11px] font-medium text-zinc-300 hover:text-white flex items-center justify-center space-x-1 transition-colors"
-            >
-              <Plus className="h-3 w-3" />
-              <span>Threat</span>
-            </button>
-            <button
-              onClick={onOpenReqModal}
-              className="flex-1 py-1 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-[11px] font-medium text-zinc-300 hover:text-white flex items-center justify-center space-x-1 transition-colors"
-            >
-              <Plus className="h-3 w-3" />
-              <span>Req</span>
-            </button>
+        <div className="px-5 pb-3">
+          <div className="flex items-center gap-2">
+            {[
+              { label: "Goal", onClick: onOpenGoalModal },
+              { label: "Threat", onClick: onOpenScenarioModal },
+              { label: "Req", onClick: onOpenReqModal },
+            ].map((action) => (
+              <button
+                key={action.label}
+                onClick={action.onClick}
+                className="flex-1 py-1.5 rounded-xl bg-white border border-white/90 text-xs font-bold text-[#635F69] hover:text-[#7C3AED] flex items-center justify-center gap-1 shadow-[3px_3px_8px_rgba(160,150,180,0.15),-2px_-2px_6px_#ffffff] hover:-translate-y-0.5 active:scale-95 transition-all"
+                style={{ fontFamily: "var(--font-nunito), sans-serif" }}
+              >
+                <Plus className="h-3 w-3 text-[#7C3AED]" />
+                <span>{action.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Navigation Items */}
-      <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+      {/* ── Separator ── */}
+      <div className="mx-6 h-px bg-[#EAE5F3]" />
+
+      {/* ── Navigation ── */}
+      <nav className="flex-1 px-3.5 py-3 space-y-1.5 overflow-y-auto">
         {visibleNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -189,22 +211,29 @@ export function Sidebar({
             <button
               key={item.id}
               onClick={() => onSelectTab(item.id)}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors ${
+              className={`relative w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-200 ${
                 isActive
-                  ? "bg-zinc-800/80 text-zinc-100 font-medium"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50"
+                  ? "bg-white text-[#7C3AED] shadow-[6px_6px_14px_rgba(160,150,180,0.18),-4px_-4px_10px_#ffffff] font-bold"
+                  : "text-[#635F69] hover:text-[#332F3A] hover:bg-white/50"
               }`}
             >
-              <div className="flex items-center space-x-2.5 truncate">
+              <div className="flex items-center gap-3 truncate">
                 <Icon
-                  className={`h-3.5 w-3.5 flex-shrink-0 ${
-                    isActive ? "text-zinc-100" : "text-zinc-400"
+                  className={`h-4 w-4 flex-shrink-0 ${
+                    isActive ? "text-[#7C3AED]" : "text-[#635F69]"
                   }`}
                 />
                 <span className="truncate">{item.label}</span>
               </div>
+
               {item.badge && (
-                <span className="text-[10px] font-mono text-zinc-500">
+                <span
+                  className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                    isActive
+                      ? "bg-[#EFEBF5] text-[#7C3AED] shadow-[inset_1px_1px_2px_#dcd7e7]"
+                      : "bg-[#EAE5F3]/70 text-[#635F69]"
+                  }`}
+                >
                   {item.badge}
                 </span>
               )}
@@ -213,30 +242,40 @@ export function Sidebar({
         })}
       </nav>
 
-      {/* Authentic User Profile Card (No role-switcher buttons!) */}
-      <div className="p-3 border-t border-zinc-850 bg-[#09090b]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 min-w-0">
-            <div className="h-7 w-7 rounded-full bg-zinc-800 border border-zinc-750 flex items-center justify-center font-bold text-xs text-zinc-200 flex-shrink-0">
+      {/* ── Separator ── */}
+      <div className="mx-6 h-px bg-[#EAE5F3]" />
+
+      {/* ── User Profile Card & Real Logout Action ── */}
+      <div className="p-4">
+        <div className="flex items-center justify-between bg-white/70 rounded-2xl p-2.5 border border-white/80 shadow-[4px_4px_10px_rgba(160,150,180,0.1),-3px_-3px_8px_#ffffff]">
+          <div className="flex items-center gap-2.5 min-w-0">
+            {/* Clay Avatar */}
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] text-white flex items-center justify-center font-extrabold text-xs shadow-[3px_3px_8px_rgba(139,92,246,0.28),-2px_-2px_5px_#ffffff] flex-shrink-0">
               {user.name.charAt(0)}
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-medium text-zinc-200 truncate">
+              <div className="text-xs font-bold text-[#332F3A] truncate leading-tight">
                 {user.name}
               </div>
-              <div className="text-[10px] text-zinc-500 capitalize truncate">
-                {user.role.replace("_", " ")}
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#10B981]" />
+                <span className="text-[10px] text-[#635F69] capitalize leading-tight">
+                  {user.role.replace("_", " ")}
+                </span>
               </div>
             </div>
           </div>
 
-          <Link
-            href="/login"
-            className="p-1.5 rounded text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
-            title="Sign out / Switch user"
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="p-2 rounded-xl text-[#635F69] hover:text-[#DC2626] hover:bg-[#FEE2E2] transition-all disabled:opacity-50"
+            title="Sign out"
+            aria-label="Sign out"
           >
-            <LogOut className="h-3.5 w-3.5" />
-          </Link>
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </aside>

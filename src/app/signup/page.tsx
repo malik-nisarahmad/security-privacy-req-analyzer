@@ -3,8 +3,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Shield, ArrowRight, Lock, Mail, User, Check, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+};
 
 export default function SignupPage() {
   const router = useRouter();
@@ -52,7 +58,7 @@ export default function SignupPage() {
       }
 
       toast.success("Account created successfully", {
-        description: "Registered in Supabase Auth with Bcrypt (R9).",
+        description: "Registered with Bcrypt hashing (R9).",
       });
       router.push("/login");
     } catch (err: any) {
@@ -65,52 +71,61 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#09090b] text-zinc-100 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen flex flex-col justify-between bg-[#F4F1FA] text-[#332F3A] p-4 sm:p-6 relative overflow-hidden select-none">
+      {/* ── Floating 3D Blobs ── */}
+      <div className="clay-blob-1" />
+      <div className="clay-blob-2" />
+
       {/* Top Header */}
-      <div className="max-w-7xl w-full mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2.5 group">
-          <div className="h-8 w-8 rounded-lg bg-zinc-100 text-zinc-950 flex items-center justify-center font-bold transition-transform group-hover:scale-105">
-            <Shield className="h-4 w-4 text-zinc-900" />
+      <div className="max-w-md w-full mx-auto flex items-center justify-between relative z-10">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] text-white flex items-center justify-center transition-transform group-hover:scale-105 shadow-[4px_4px_10px_rgba(139,92,246,0.3),-2px_-2px_6px_#ffffff]">
+            <Shield className="h-4 w-4" />
           </div>
-          <span className="font-semibold text-sm tracking-tight text-white">
+          <span className="font-extrabold text-base tracking-tight text-[#332F3A]" style={{ fontFamily: "var(--font-nunito), sans-serif" }}>
             SPRAT
           </span>
         </Link>
 
         <Link
           href="/"
-          className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+          className="text-xs font-bold text-[#635F69] hover:text-[#332F3A] transition-colors px-3 py-1.5 rounded-xl hover:bg-white/50"
         >
-          ← Back to Overview
+          ← Back to Home
         </Link>
       </div>
 
       {/* Main Registration Card */}
-      <div className="w-full max-w-md mx-auto my-8">
-        <div className="bg-[#121215] border border-zinc-800/80 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          <div className="space-y-2 mb-6">
-            <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 text-[10px] font-mono mb-1">
+      <motion.div
+        initial="hidden"
+        animate="show"
+        variants={fadeUp}
+        className="w-full max-w-md mx-auto my-6 relative z-10"
+      >
+        <div className="clay-card p-7 sm:p-9 space-y-6">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFEBF5] text-[10px] font-bold text-[#7C3AED]">
               <Lock className="h-3 w-3" />
-              <span>R9: Bcrypt Password Hashing</span>
+              <span>Bcrypt R9 Hashing</span>
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-white">
-              Create an Account
+            <h1 className="text-2xl font-black tracking-tight text-[#332F3A]" style={{ fontFamily: "var(--font-nunito), sans-serif" }}>
+              Create account
             </h1>
-            <p className="text-xs text-zinc-400">
-              Join your organization&apos;s security requirements workspace
+            <p className="text-xs font-medium text-[#635F69]">
+              Join your organization&apos;s workspace
             </p>
           </div>
 
           {errorMessage && (
-            <div className="mb-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center space-x-2">
+            <div className="p-3.5 rounded-2xl bg-[#FEE2E2] border border-[#FCA5A5] text-[#991B1B] text-xs font-medium flex items-center gap-2.5">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          <form onSubmit={handleSignup} className="space-y-4 text-xs">
+          <form onSubmit={handleSignup} className="space-y-4">
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
+              <label className="block text-xs font-bold text-[#635F69] mb-1.5">
                 Full Name
               </label>
               <div className="relative">
@@ -120,15 +135,15 @@ export default function SignupPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Alex Mercer"
-                  className="w-full pl-9 pr-3 py-2.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 clay-input text-xs font-medium"
                 />
-                <User className="h-4 w-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
+                <User className="h-4 w-4 text-[#635F69] absolute left-3.5 top-3.5 pointer-events-none" />
               </div>
             </div>
 
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
-                Work Email Address
+              <label className="block text-xs font-bold text-[#635F69] mb-1.5">
+                Work Email
               </label>
               <div className="relative">
                 <input
@@ -137,37 +152,37 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="analyst@healthcare.org"
-                  className="w-full pl-9 pr-3 py-2.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 clay-input text-xs font-medium"
                 />
-                <Mail className="h-4 w-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
+                <Mail className="h-4 w-4 text-[#635F69] absolute left-3.5 top-3.5 pointer-events-none" />
               </div>
             </div>
 
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
-                Role Preference (R1/R8)
+              <label className="block text-xs font-bold text-[#635F69] mb-1.5">
+                Role
               </label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3 py-2.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-zinc-500"
+                className="w-full px-4 py-3 clay-input text-xs font-medium"
               >
-                <option value="analyst">Requirements Analyst (Authoring)</option>
-                <option value="project_manager">Project Manager (Member Scoping)</option>
-                <option value="guest">Guest (Read-only / Restricted R7)</option>
+                <option value="analyst">Analyst (Authoring)</option>
+                <option value="project_manager">Project Manager</option>
+                <option value="guest">Guest (Read-only)</option>
               </select>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-zinc-300 font-medium">Password</label>
+                <label className="text-xs font-bold text-[#635F69]">Password</label>
                 <span
-                  className={`text-[11px] font-mono flex items-center space-x-1 ${
-                    isPasswordValid ? "text-emerald-400" : "text-zinc-500"
+                  className={`text-[11px] font-bold flex items-center gap-1 ${
+                    isPasswordValid ? "text-[#10B981]" : "text-[#635F69]"
                   }`}
                 >
                   {isPasswordValid && <Check className="h-3 w-3" />}
-                  <span>Min 8 characters</span>
+                  <span>Min 8 chars</span>
                 </span>
               </div>
               <div className="relative">
@@ -177,38 +192,38 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 clay-input text-xs font-medium"
                 />
-                <Lock className="h-4 w-4 text-zinc-500 absolute left-3 top-3 pointer-events-none" />
+                <Lock className="h-4 w-4 text-[#635F69] absolute left-3.5 top-3.5 pointer-events-none" />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 py-2.5 px-4 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs transition-all shadow-sm active:scale-[0.99] flex items-center justify-center space-x-2"
+              className="w-full mt-2 py-3 px-4 clay-btn-primary text-white font-bold text-xs flex items-center justify-center gap-2 shadow-[8px_8px_18px_rgba(139,92,246,0.3),-4px_-4px_10px_#ffffff]"
             >
               <span>{isLoading ? "Creating account..." : "Create Account"}</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-4 w-4" />
             </button>
           </form>
 
           {/* Link to Login */}
-          <div className="mt-6 pt-4 border-t border-zinc-800/80 text-center text-xs">
-            <span className="text-zinc-400">Already registered? </span>
+          <div className="pt-3 border-t border-[#EAE5F3] text-center text-xs font-medium">
+            <span className="text-[#635F69]">Already registered? </span>
             <Link
               href="/login"
-              className="text-zinc-200 font-semibold hover:underline"
+              className="text-[#7C3AED] font-bold hover:underline"
             >
-              Sign in to your account
+              Sign in
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Footer */}
-      <footer className="text-center text-xs text-zinc-500 max-w-7xl mx-auto w-full">
-        SPRAT Security & Privacy Requirements Analysis Tool — SE3002
+      <footer className="text-center text-[11px] font-bold text-[#635F69] max-w-md mx-auto w-full relative z-10">
+        SPRAT • Security & Privacy Requirements Analysis Tool
       </footer>
     </div>
   );

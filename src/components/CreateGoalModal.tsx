@@ -56,34 +56,34 @@ export function CreateGoalModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-[#121215] border border-zinc-800 rounded-xl max-w-xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80">
-          <div className="flex items-center space-x-2.5">
-            <div className="h-7 w-7 rounded-md bg-zinc-800 text-zinc-100 flex items-center justify-center">
-              <Target className="h-4 w-4 text-zinc-300" />
+    <div className="fixed inset-0 z-50 bg-[#332F3A]/40 backdrop-blur-md flex items-center justify-center p-4 select-none">
+      <div className="clay-card rounded-[32px] sm:rounded-[40px] max-w-xl w-full p-7 sm:p-8 space-y-6 shadow-[24px_24px_48px_rgba(160,150,180,0.3),-12px_-12px_28px_#ffffff] max-h-[90vh] overflow-y-auto bg-white/95">
+        <div className="flex items-center justify-between pb-4 border-b border-[#EAE5F3]">
+          <div className="flex items-center space-x-3">
+            <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-[#A78BFA] to-[#7C3AED] text-white flex items-center justify-center shadow-[4px_4px_10px_rgba(139,92,246,0.3)]">
+              <Target className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-100">
+              <h3 className="text-lg font-black text-[#332F3A]" style={{ fontFamily: "var(--font-nunito), sans-serif" }}>
                 Specify Security / Privacy Goal
               </h3>
-              <p className="text-[11px] text-zinc-400">
-                SRS FR-GSM 1–8: Categorization, Granularity & Subjects
+              <p className="text-xs font-medium text-[#635F69]">
+                Categorization, Granularity & Subject mapping
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors"
+            className="p-2 rounded-xl text-[#635F69] hover:text-[#332F3A] hover:bg-[#EFEBF5] transition-all"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
+              <label className="block text-[#635F69] font-bold mb-1.5">
                 Goal ID Label *
               </label>
               <input
@@ -94,11 +94,11 @@ export function CreateGoalModal({
                   setFormData({ ...formData, goal_id_label: e.target.value })
                 }
                 placeholder="e.g. G-003"
-                className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+                className="w-full px-4 py-2.5 clay-input text-xs font-medium placeholder-[#635F69]"
               />
             </div>
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
+              <label className="block text-[#635F69] font-bold mb-1.5">
                 Taxonomy Category *
               </label>
               <select
@@ -106,7 +106,7 @@ export function CreateGoalModal({
                 onChange={(e) =>
                   setFormData({ ...formData, taxonomy: e.target.value })
                 }
-                className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 focus:outline-none focus:border-zinc-500"
+                className="w-full px-4 py-2.5 clay-input text-xs font-medium"
               >
                 {taxonomies.map((t) => (
                   <option key={t.id} value={t.name}>
@@ -118,7 +118,7 @@ export function CreateGoalModal({
           </div>
 
           <div>
-            <label className="block text-zinc-300 font-medium mb-1.5">
+            <label className="block text-[#635F69] font-bold mb-1.5">
               Goal Description *
             </label>
             <textarea
@@ -129,13 +129,13 @@ export function CreateGoalModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               placeholder="State the security or privacy goal clearly..."
-              className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+              className="w-full px-4 py-2.5 clay-input text-xs font-medium placeholder-[#635F69] resize-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
+              <label className="block text-[#635F69] font-bold mb-1.5">
                 Granularity
               </label>
               <select
@@ -146,14 +146,14 @@ export function CreateGoalModal({
                     granularity: e.target.value as GoalGranularity,
                   })
                 }
-                className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                className="w-full px-4 py-2.5 clay-input text-xs font-medium"
               >
                 <option value="policy">Policy Level</option>
                 <option value="scenario">Scenario Level</option>
               </select>
             </div>
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
+              <label className="block text-[#635F69] font-bold mb-1.5">
                 Observability
               </label>
               <select
@@ -164,7 +164,7 @@ export function CreateGoalModal({
                     observability: e.target.value as GoalObservability,
                   })
                 }
-                className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                className="w-full px-4 py-2.5 clay-input text-xs font-medium"
               >
                 <option value="observable">Observable</option>
                 <option value="unobservable">Unobservable</option>
@@ -172,9 +172,9 @@ export function CreateGoalModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">Actor</label>
+              <label className="block text-[#635F69] font-bold mb-1.5">Actor</label>
               <input
                 type="text"
                 value={formData.actor}
@@ -182,11 +182,11 @@ export function CreateGoalModal({
                   setFormData({ ...formData, actor: e.target.value })
                 }
                 placeholder="e.g. Rogue Administrator"
-                className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                className="w-full px-4 py-2.5 clay-input text-xs font-medium placeholder-[#635F69]"
               />
             </div>
             <div>
-              <label className="block text-zinc-300 font-medium mb-1.5">
+              <label className="block text-[#635F69] font-bold mb-1.5">
                 Relevant Legislation
               </label>
               <input
@@ -199,16 +199,16 @@ export function CreateGoalModal({
                   })
                 }
                 placeholder="e.g. GDPR Art. 32, HIPAA §164"
-                className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                className="w-full px-4 py-2.5 clay-input text-xs font-medium placeholder-[#635F69]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-zinc-300 font-medium mb-1.5">
+            <label className="block text-[#635F69] font-bold mb-1.5">
               Subject Classifications (Tags)
             </label>
-            <div className="flex flex-wrap gap-1.5 p-2 bg-zinc-950 border border-zinc-800/80 rounded-lg max-h-28 overflow-y-auto">
+            <div className="flex flex-wrap gap-1.5 p-3 rounded-2xl bg-[#EFEBF5] shadow-[inset_2px_2px_5px_#dcd7e7,inset_-2px_-2px_5px_#ffffff] max-h-28 overflow-y-auto">
               {subjectsList.map((sub) => {
                 const isSelected = formData.subjects.includes(sub);
                 return (
@@ -216,10 +216,10 @@ export function CreateGoalModal({
                     type="button"
                     key={sub}
                     onClick={() => toggleSubject(sub)}
-                    className={`text-[11px] px-2 py-0.5 rounded transition-colors ${
+                    className={`text-[11px] px-2.5 py-1 rounded-full font-bold transition-all ${
                       isSelected
-                        ? "bg-zinc-100 text-zinc-900 font-medium"
-                        : "bg-zinc-900 text-zinc-400 hover:text-zinc-200"
+                        ? "clay-btn-primary text-white shadow-[2px_2px_6px_rgba(139,92,246,0.3)]"
+                        : "bg-white text-[#635F69] hover:text-[#332F3A] shadow-[2px_2px_4px_rgba(160,150,180,0.1)]"
                     }`}
                   >
                     {sub}
@@ -229,17 +229,17 @@ export function CreateGoalModal({
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-3 border-t border-zinc-800">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-[#EAE5F3]">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 rounded-lg border border-zinc-800 text-zinc-300 hover:bg-zinc-800 transition-colors font-medium"
+              className="clay-btn-secondary px-5 py-2.5 text-xs font-bold text-[#635F69]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold shadow-sm transition-all active:scale-[0.98]"
+              className="clay-btn-primary px-6 py-2.5 text-white text-xs font-bold shadow-[6px_6px_14px_rgba(139,92,246,0.3),-2px_-2px_6px_#ffffff]"
             >
               Save Goal
             </button>
